@@ -1,0 +1,51 @@
+CREATE DATABASE DB_REIS
+USE DB_REIS
+
+CREATE TABLE CONTA(
+CODIGO INT PRIMARY KEY IDENTITY,
+DATA DATETIME,
+SALDO_FINAL NUMERIC(10,2),
+BANCO INT,
+AGENCIA VARCHAR(6),
+CONTA VARCHAR(10)
+)
+
+CREATE TABLE PAGTO
+(CODIGO INT PRIMARY KEY IDENTITY,
+DATA DATETIME,
+TIPO CHAR(1),
+VALOR NUMERIC(10,2),
+BANCO INT,
+AGENCIA VARCHAR(6),
+CONTA VARCHAR(10)
+)
+
+CREATE TRIGGER Tr_verifica
+FOR INSERT PAGTO
+AS
+DECLARE @tipo char, @banco int, @agencia varchar(6), @conta varchar(10), @valor NUMERIC(10,2)
+select @tipo = TIPO from inserted 
+select @banco = BANCO from inserted 
+select @agencia = AGENCIA from inserted 
+select @conta = CONTA from inserted 
+select @valor = VALOR from inserted 
+
+DECLARE @valor_final NUMERIC(10,2)
+SET @valor_final = (SELECT SALDO_FINAL FROM CONTA WHERE CONTA = @conta AND
+AGENCIA = @agencia AND BANCO = @BANCO)
+
+if @tipo = 'D' AND @valor > @valor_final
+	BEGIN
+		PRINT('ERRO: O valor é maior que o saldo.')
+		ROLLBACK TRANSACTION
+	END
+else if @tipo = 'D'
+	BEGIN
+		update CONTA set SALDO_FINAL = @valor - @valor_final WHERE CONTA = @conta AND
+		AGENCIA = @agencia AND BANCO = @BANCO
+	END
+else
+	BEGIN
+		update CONTA set SALDO_FINAL = @valor - @valor_final WHERE CONTA = @conta AND
+		AGENCIA = @agencia AND BANCO = @BANCO
+	END

@@ -1,0 +1,15 @@
+CREATE DATABASE DB_REIS
+USE DB_REIS
+
+CREATE TABLE produto(
+	codigo int primary key,
+	nome varchar(80),
+	vlrUnit numeric(3,3),
+	qtde int,
+	inss int,
+	ipi int,
+	pis int,
+	cof int,
+	csl int,
+	icms int
+)

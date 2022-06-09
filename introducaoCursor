@@ -1,0 +1,60 @@
+CREATE DATABASE DB_REIS
+
+create table aluno(
+	Cod int null,
+	Nome varchar(50) null,
+	Nota1 numeric(3,1),
+	Nota2 numeric(3,1)
+)
+
+DROP TABLE aluno
+
+insert into aluno values (1,'Ana Paula', 8, 7)
+insert into aluno values (2,'Paulo', 6, 4)
+insert into aluno values (3,'Mario', 6, 8)
+insert into aluno values (4,'Cintia', 3, 7)
+insert into aluno values (6,'Pedro', 3, 3)
+
+declare aluno_Cursor cursor for 
+select Cod, Nome, Nota1, Nota2 from aluno order by cod
+
+OPEN aluno_Cursor
+
+declare @cod int, @nome varchar(50), @nota1 numeric(3,1), @nota2 numeric(3,1), @media numeric(3,1)
+
+fetch next from aluno_Cursor into @cod, @nome, @nota1, @nota2
+
+while @@FETCH_STATUS = 0
+	SET @media = (@nota1 + @nota2)/2
+	begin 
+	if @media > 6
+	begin
+		print 'Código aluno: ' + cast(@cod as varchar)
+		print 'Nome do aluno: ' + @nome
+		print 'Média final: ' + cast(@media as varchar)
+		print 'Situação: Aprovado'
+		print '-----------------------'
+	end
+	else if @media < 4
+	begin
+		print 'Código aluno: ' + cast(@cod as varchar)
+		print 'Nome do aluno: ' + @nome
+		print 'Média final: ' + cast(@media as varchar)
+		print 'Situação: Reprovado'
+		print '-----------------------'
+	end
+	else
+	begin
+		print 'Código aluno: ' + cast(@cod as varchar)
+		print 'Nome do aluno: ' + @nome
+		print 'Média final: ' + cast(@media as varchar)
+		print 'Situação: Recuperação'
+		print '-----------------------'
+	end
+
+	fetch next from aluno_Cursor into @cod, @nome, @nota1, @nota2
+	
+	END
+
+	close aluno_Cursor
+	deallocate aluno_Cursor
